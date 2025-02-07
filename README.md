@@ -47,6 +47,8 @@ The dataset consists of:
   - Greek characters
   - Mathematical constructs (\frac, \sqrt, etc.)
   - Structural elements (nested expressions, matrices, binomial coefficients, etc.)
+ 
+We are also planning on generating a subset of the test dataset with our own handwritten math equations with a Wacom tablet.
 
  ### Discussion 
 
