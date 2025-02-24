@@ -63,6 +63,53 @@ Unlike traditional OCR tasks, we need to capture the hierarchical structure of s
 
 We both brainstormed the project idea and the high-level design. We met with Professor Czajka for questions, and finishing the report for Part 1 together.
 
+## Part 2: Dataset
 
+### Introduction
 
+For this phase, we continue to utilize the dataset that was described in Part 1 as it provides a large variety of handwritten mathematical expressions. We have physically downloaded it from sources below:
 
+- Paper: [MATHWRITING: A Large-Scale Handwritten Math Expression Dataset](https://arxiv.org/pdf/2404.10690)
+- GitHub Repository: [The MathWriting Dataset: Online Handwritten Mathematical Expressions](https://github.com/google-research/google-research/tree/master/mathwriting)
+
+The dataset is split into train, validation, test, symbols, and synthetic subsets. A core aspect of this splitting strategy is that each contributor ID (i.e., each individual writer) belongs to only one subset (either training, validation, or testing). This ensures that the model is exposed to truly unseen handwriting styles in the test set, preventing overfitting to any specific set of writer characteristics.
+
+1. Training Set:
+- Primary partition used for learning model parameters (weights, biases).
+- Comprises the majority of the data to capture wide-ranging handwriting styles and symbols.
+
+2. Validation Set:
+- Used to tune hyperparameters and conduct early stopping checks.
+- Conatins a distinct set of contributiors to test intermediate model generalization.
+
+3. Test Set:
+- "Unknown" subset, kept separate until final evaluation.
+- Writers here do not appear in the training or validation sets, ensuring unbiased performance metrics.
+
+The dataset aims for minimal overlap between train and test labels (around 8%), contrasting with a higher overlap (about 55%) between train and validation. This measures the model's capacity to handle truly new symbols that it may not encounter during training.
+
+In addition to human-contributed data, the dataset includes synthetic samples. These augment underrepresented symbols and accommodate longer equations that might not fit well on a physical tablet.
+
+### Consideration of MNIST for Pre-Training
+
+We received a comment from Part 1 recommending MNIST as a pre-training dataset for digit recognition. While our current dataset already includes digits, we see value in using MNIST to:
+
+- Placing MNIST digits randomly on a plain background provides a simplified environment for identifying digit shapes.
+- Pre-training on a straightforward task (isolated digits) could yield faster or more stable convergence when transitioning to more complex expressions.
+
+Our plan, if time permits, is to use MNIST-based digit placement as an optional pre-training phase. This would help reinforce digit recognition before tackling the nuanced challenges of full mathematical expressions in MATHWRITING.
+
+### Data Cleansing and Preprocessing
+
+- Handwritten Samples:
+   - Filtering: Unreadable equations will be removed.
+   - Consistency: Writers and stroke patterns are maintained, ensuring each contributor’s work remains grouped in a single subset.
+- LaTeX Equations:
+   - Multiple LaTeX notations for the same expression are standardized to a single canonical form. However, the unnormalized versions remain available for reference.
+   - Uniform tokens (like `\sqrt`, `\frac`, etc.) help the model map from strokes to semantically consistent LaTeX.
+
+The goal is to ensure a clean, coherent dataset where each equation is valid and easily comparable.
+
+### Part 2 Contributions
+
+We worked together to download and organize the MATHWRITING dataset, ensuring proper subset splits (train/validation/test) while addressing the suggested considerations for unseen handwriting styles. We discussed the benefits of pre-training on MNIST and agreed to keep this option open for improving digit detection. We also prepared this report section by coordinating our individual tasks and reviewing each other’s work for clarity and coherence.
