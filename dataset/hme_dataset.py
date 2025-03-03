@@ -1,7 +1,7 @@
 import os
 from torch.utils.data import Dataset
 
-from ink import *
+from dataset.hme_ink import *
 
 class HMEDataset(Dataset):
     def __init__(self, root_dir, split='train', transform=None):
