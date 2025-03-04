@@ -40,8 +40,8 @@ class HMEDataset(Dataset):
         ink_feature_vector = self.extract_features(ink) # returns feature tensor
         
         if self.transform: ink_feature_vector = self.transform(ink_feature_vector)
-        
-        return ink_feature_vector, ink.annotations.normalizedLabel
+                
+        return ink_feature_vector, ink.annotations['normalizedLabel']
     
     def extract_features(self, ink: Ink):
         """
@@ -56,7 +56,6 @@ class HMEDataset(Dataset):
 
         # [[[x], [y], [t]], [[x], [y], [t]]]
         ink_features = []
-
 
         # find global min/max for normalization
         all_x = []

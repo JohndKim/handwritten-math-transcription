@@ -1,5 +1,6 @@
 import torch
 from torch.utils.data import DataLoader
+from torch.nn.utils.rnn import pad_sequence
 
 import os, subprocess
 import tqdm
@@ -67,17 +68,18 @@ def main():
     print(train_dataset[0])
     
 
-    # train_dataloader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=False, drop_last=False)
-    # valid_dataloader = DataLoader(valid_dataset, batch_size=BATCH_SIZE, shuffle=False, drop_last=False)
-    # test_dataloader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False, drop_last=False)
+    train_dataloader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=False, drop_last=False, collate_fn=collate_variable_length_sequences)
+    valid_dataloader = DataLoader(valid_dataset, batch_size=BATCH_SIZE, shuffle=False, drop_last=False, collate_fn=collate_variable_length_sequences)
+    test_dataloader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False, drop_last=False, collate_fn=collate_variable_length_sequences)
     
-    # print(train_dataloader)
-    # # print(train_dataloader[0])
-    # for batch in train_dataloader:
-    #     print(batch)
+    print(train_dataloader)
+    # print(train_dataloader[0])
+    
+    for batch in train_dataloader:
+        features, lengths, labels = batch
+        print(lengths)
     
     # train(model, train_dataloader, EPOCHS)
-
 
 
 
@@ -98,6 +100,15 @@ def download_data(url="https://storage.googleapis.com/mathwriting_data/mathwriti
 
     return dirname
 
+def collate_variable_length_sequences(batch):
+    feature_vectors, labels = zip(*batch)
+    print(len(feature_vectors), len(labels))
+    
+    # padded_features will have shape: [batch_size, max_seq_len, feature_dim]
+    padded_features = pad_sequence(feature_vectors, batch_first=True, padding_value=0.0)
+    lengths = torch.tensor([vec.size(0) for vec in feature_vectors]) # original lengths
+    
+    return padded_features, lengths, list(labels)
 
 if __name__ == "__main__":
     main()
