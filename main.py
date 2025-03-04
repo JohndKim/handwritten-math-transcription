@@ -63,12 +63,21 @@ def main():
     print(f"Found {len(train_dataset.ink_files)} files in {train_dataset.split} split")
     print(f"Found {len(valid_dataset.ink_files)} files in {valid_dataset.split} split")
     print(f"Found {len(test_dataset.ink_files)} files in {test_dataset.split} split")
-
-    train_dataloader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=False, drop_last=False)
-    valid_dataloader = DataLoader(valid_dataset, batch_size=BATCH_SIZE, shuffle=False, drop_last=False)
-    test_dataloader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False, drop_last=False)
     
-    train(model, train_dataloader, EPOCHS)
+    print(train_dataset[0])
+    
+
+    # train_dataloader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=False, drop_last=False)
+    # valid_dataloader = DataLoader(valid_dataset, batch_size=BATCH_SIZE, shuffle=False, drop_last=False)
+    # test_dataloader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False, drop_last=False)
+    
+    # print(train_dataloader)
+    # # print(train_dataloader[0])
+    # for batch in train_dataloader:
+    #     print(batch)
+    
+    # train(model, train_dataloader, EPOCHS)
+
 
 
 

@@ -7,6 +7,7 @@ import re
 import numpy as np
 import matplotlib.pyplot as pl
 import matplotlib.patches as mpl_patches
+import math
 
 from xml.etree import ElementTree
 
@@ -45,6 +46,7 @@ def read_inkml_file(filename: str) -> Ink:
       strokes.append(np.array((stroke_x, stroke_y, stroke_t)))
 
   return Ink(strokes=strokes, annotations=annotations)
+  # return {"strokes": strokes, "annotations": annotations}
 
 
 def display_ink(
@@ -64,3 +66,5 @@ def display_ink(
     )
   pl.gca().invert_yaxis()
   pl.gca().axis('equal')
+  
+  
