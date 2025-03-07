@@ -130,15 +130,15 @@ We both researched on designing the model together, and Tram implemented the arc
 
 The encoder reads the sequence of handwritten stroke features and creates a summary of the information. We use a bidirectional LSTM network, being directional meaning that it should be able to read the sequence from the start and from the end at the same time for better understanding of the context.
 
-### Attention Mechanism
+#### Attention Mechanism
 
 The attention part helps the decoder focus on the important parts of the encoded information when creating each LaTeX token. At each step, the decoder will look at all the encoder outputs and decides which parts are most important to generate the next token. Tram believed that this “soft alignment” would make the model flexible when dealing with different handwriting styles.
 
-### Decoder
+#### Decoder
 
 The decoder takes the information from the encoder and the attention module to generate LaTeX code, one toke at a time. It is implemeted as an LSTM that works step by step. The decoder uses an embedding layer to turn token numbers into a vector space, which makes it easier to work with. We decided to try `teacher forcing` during training in order to feed the correct token (from our ground truth) into the decoder at each step to help it learn faster.
 
-### Connecting Encoder and Decoder
+#### Connecting Encoder and Decoder
 
 The encoder is bidirectional, so its hidden state is made up of two parts (one for reading from the start and one from the end). We combine these two parts (by summing them) so that the hidden state matches what the decoder expects. This is important to ensure that the model uses information from both directions.
 
