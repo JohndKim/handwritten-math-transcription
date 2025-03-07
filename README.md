@@ -50,7 +50,7 @@ The dataset consists of:
  
 We are also planning on generating a subset of the test dataset with our own handwritten math equations with a Wacom tablet.
 
- ### Discussion 
+### Discussion 
 
 One of the biggest challenges we face in handwritten mathematical expression recognition is the high variability in handwriting styles. Differences in stroke patterns, writing pressure, and individual character formation make it difficult to generalize across users.
 - Cursive and print letters and characters
@@ -113,3 +113,59 @@ The goal is to ensure a clean, coherent dataset where each equation is valid and
 ### Part 2 Contributions
 
 We worked together to download and organize the MATHWRITING dataset, ensuring proper subset splits (train/validation/test) while addressing the suggested considerations for unseen handwriting styles. We discussed the benefits of pre-training on MNIST and agreed to keep this option open for improving digit detection. We also prepared this report section by coordinating our individual tasks and reviewing each other’s work for clarity and coherence.
+
+## Part 3: Inital Setup and First Model Architecture
+
+### Inital Setup
+
+John has been working on the dataset and the basic setup for our project. He wrote scripts to clean and prepare the InkML files (which contain the handwritten strokes). He implemented code that reads these files and extract useful features like stroke position, speed, and curvature.
+
+John also built the Data Loader to load the data, and a special collate function was made to pad sequences of varying lengths so that we can process them in batches.
+
+### Model Architecture
+
+We both researched on designing the model together, and Tram implemented the architecture. Our model is based on a simple sequence-to-sequence design with an attention mechanism. Here is a simple explanation of our current design:
+
+#### Encoder
+
+The encoder reads the sequence of handwritten stroke features and creates a summary of the information. We use a bidirectional LSTM network, being directional meaning that it should be able to read the sequence from the start and from the end at the same time for better understanding of the context.
+
+### Attention Mechanism
+
+The attention part helps the decoder focus on the important parts of the encoded information when creating each LaTeX token. At each step, the decoder will look at all the encoder outputs and decides which parts are most important to generate the next token. Tram believed that this “soft alignment” would make the model flexible when dealing with different handwriting styles.
+
+### Decoder
+
+The decoder takes the information from the encoder and the attention module to generate LaTeX code, one toke at a time. It is implemeted as an LSTM that works step by step. The decoder uses an embedding layer to turn token numbers into a vector space, which makes it easier to work with. We decided to try `teacher forcing` during training in order to feed the correct token (from our ground truth) into the decoder at each step to help it learn faster.
+
+### Connecting Encoder and Decoder
+
+The encoder is bidirectional, so its hidden state is made up of two parts (one for reading from the start and one from the end). We combine these two parts (by summing them) so that the hidden state matches what the decoder expects. This is important to ensure that the model uses information from both directions.
+
+## Why This Architecture?
+
+Our design is inspired by several projects that uses similar ideas:
+- **CROHME (Competition on Recognition of Online Handwritten Mathematical Expressions):** Many projects in this challenge use encoder-decoder architecture with attention to handle the complex layouts of math expressions, so we decided to give it a try.
+- **[Im2LaTeX](https://github.com/d-gurgurov/im2latex)**: This is a project that converts images (.PNG) of math expressions into LaTeX code using neural networks. 
+- **Simple OCR and Sequence-to-Sequence Models:** Other simpler projects, like basic OCR systems for handwritten digits (using MNIST), have shown that sequence models can learn and convert images or strokes into text. These projects helped us understand the basics before moving on to more complex math expressions.
+
+## Challenges
+
+As we move forward, we are encountering several challenges and open questions that we hope to discuss with Adam and Rasel for further guidance:
+
+- Handwritten mathematical expressions show significant variability in style, stroke order, and clarity. This variability makes it difficult for the model to generalize well across different writers. How can we further normalize or augment our data to better capture this variability? Are there additional preprocessing steps or features (e.g., temporal dynamics) that might help?
+- We ran model on the MPS backend (MacOS) for debugging and encountered memory limitations. Although we have reduced the batch size, memory consumption remains a concern. Although, we are planning to train the model using GPU as the next step, we are still wondering whether we should optimize the model to help reduce memory usage.
+- Our model currently uses a set of hyperparameters (e.g., number of layers, hidden dimensions, learning rate) that were chosen based on preliminary experiments. However, fine-tuning these parameters is important for achieving optimal performance. Should we consider automated hyperparameter tuning methods, such as grid search or Bayesian optimization?
+- Our project plan includes a second stage where an LLM is used to correct the raw LaTeX output. We are currently exploring which open-source LLM would be best suited for this task. How should we interface the output of our transcription model with the correction module?
+
+## Part 3 Contributions
+- Team:
+   - Reseached projects to guide our design.
+   - Designed the model architecture using a sequence-to-sequence approach with an attention mechanism.
+- John Kim:
+   - Downloaded, extracted, and organized the MathWriting dataset.
+   - Developed preprocessing scripts and implemented the PyTorch Dataset/DataLoader.
+   - Made sure that each data split (train/validation/test) has unique handwriting styles.
+- Tram Trinh:
+   - Implemented the encoder, attention module, and decoder for converting handwritten strokes into LaTeX.
+   - Developed a method to combine the bidirectional encoder outputs to fit the decoder.
